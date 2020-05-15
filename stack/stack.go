@@ -1,4 +1,4 @@
-package exprcalc
+package stack
 
 type Stack struct {
 	len  int

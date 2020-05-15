@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+
+	"github.com/LDODen/exprcalc/stack"
 )
 
 //CalculateExpression calculates given expression, returns solution or error
@@ -18,19 +20,19 @@ func CalculateExpression(expression string) (string, error) {
 
 	infixExpr := strings.Split(expression, ",")
 
-	stack := NewStack()
+	st := stack.NewStack()
 	postfixExpr := []string{}
-	for _, st := range infixExpr {
-		switch string(st) {
+	for _, str := range infixExpr {
+		switch string(str) {
 		case "(":
-			stack.Push(NewStackElement(string(st)))
+			st.Push(stack.NewStackElement(string(str)))
 			break
 		case ")":
 			for {
-				if stack.Length() == 0 {
+				if st.Length() == 0 {
 					break
 				}
-				s := stack.Pop()
+				s := st.Pop()
 				if s.Value == "(" {
 					break
 				}
@@ -39,40 +41,41 @@ func CalculateExpression(expression string) (string, error) {
 			break
 		case "+", "-", "*", "/":
 			for {
-				if stack.Length() == 0 || stack.Head.Value == "(" {
+				if st.Length() == 0 || st.Head.Value == "(" {
 					break
 				}
-				if string(st) == "/" && stack.Head.Value == "*" {
+				if string(str) == "/" && st.Head.Value == "*" {
 					break
 				}
-				if string(st) == "*" && (stack.Head.Value == "+" || stack.Head.Value == "-") {
+				if string(str) == "*" && (st.Head.Value == "+" || st.Head.Value == "-") {
 					break
 				}
-				s := stack.Pop()
+				s := st.Pop()
 
 				postfixExpr = append(postfixExpr, s.Value)
 			}
-			stack.Push(NewStackElement(string(st)))
+			st.Push(stack.NewStackElement(string(str)))
 			break
 		default:
-			postfixExpr = append(postfixExpr, string(st))
+			postfixExpr = append(postfixExpr, string(str))
 		}
 	}
 
+	fmt.Println(postfixExpr)
 	for {
-		if stack.Length() == 0 {
+		if st.Length() == 0 {
 			break
 		}
-		s := stack.Pop()
+		s := st.Pop()
 		postfixExpr = append(postfixExpr, s.Value)
 	}
 	// fmt.Println(postfixExpr)
 
-	stack = NewStack()
+	st = stack.NewStack()
 	for _, el := range postfixExpr {
 		if el == "+" || el == "-" || el == "*" || el == "/" {
-			el1, _ := strconv.ParseFloat(stack.Pop().Value, 64)
-			el2, _ := strconv.ParseFloat(stack.Pop().Value, 64)
+			el1, _ := strconv.ParseFloat(st.Pop().Value, 64)
+			el2, _ := strconv.ParseFloat(st.Pop().Value, 64)
 			var result float64
 			switch el {
 			case "+":
@@ -84,11 +87,11 @@ func CalculateExpression(expression string) (string, error) {
 			case "/":
 				result = el2 / el1
 			}
-			stack.Push(NewStackElement(fmt.Sprintf("%f", result)))
+			st.Push(stack.NewStackElement(fmt.Sprintf("%f", result)))
 		} else {
-			stack.Push(NewStackElement(el))
+			st.Push(stack.NewStackElement(el))
 		}
 	}
 	// fmt.Println(stack.Pop().Value)
-	return stack.Pop().Value, nil
+	return st.Pop().Value, nil
 }
