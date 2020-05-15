@@ -1,4 +1,4 @@
-package main
+package exprcalc
 
 import (
 	"fmt"
@@ -8,7 +8,6 @@ import (
 
 //CalculateExpression calculates given expression, returns solution or error
 func CalculateExpression(expression string) (string, error) {
-
 	expression = strings.Replace(expression, " ", "", -1)
 	expression = strings.Replace(expression, "+", ",+,", -1)
 	expression = strings.Replace(expression, "-", ",-,", -1)
@@ -92,14 +91,4 @@ func CalculateExpression(expression string) (string, error) {
 	}
 	// fmt.Println(stack.Pop().Value)
 	return stack.Pop().Value, nil
-}
-
-func main() {
-	str := "49 * 63 / 58 * 36"
-	val, err := CalculateExpression(str)
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	fmt.Println(val)
 }
