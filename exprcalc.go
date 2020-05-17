@@ -8,6 +8,54 @@ import (
 	"github.com/LDODen/exprcalc/stack"
 )
 
+// GetPostfixExpr returns expr in postfix form
+func GetPostfixExpr(infixExpr string) []string {
+
+	tempInfix := strings.Split(infixExpr, ",")
+
+	st := stack.NewStack()
+	postfixExpr := []string{}
+	for _, str := range tempInfix {
+		switch string(str) {
+		case "(":
+			st.Push(stack.NewStackElement(string(str)))
+			break
+		case ")":
+			for {
+				if st.Length() == 0 {
+					break
+				}
+				s := st.Pop()
+				if s.Value == "(" {
+					break
+				}
+				postfixExpr = append(postfixExpr, s.Value)
+			}
+			break
+		case "+", "-", "*", "/":
+			for {
+				if st.Length() == 0 || st.Head.Value == "(" {
+					break
+				}
+				if string(str) == "/" && st.Head.Value == "*" {
+					break
+				}
+				if string(str) == "*" && (st.Head.Value == "+" || st.Head.Value == "-") {
+					break
+				}
+				s := st.Pop()
+
+				postfixExpr = append(postfixExpr, s.Value)
+			}
+			st.Push(stack.NewStackElement(string(str)))
+			break
+		default:
+			postfixExpr = append(postfixExpr, string(str))
+		}
+	}
+	return postfixExpr
+}
+
 //CalculateExpression calculates given expression, returns solution or error
 func CalculateExpression(expression string) (string, error) {
 	expression = strings.Replace(expression, " ", "", -1)
