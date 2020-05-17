@@ -53,6 +53,10 @@ func GetPostfixExpr(infixExpr string) []string {
 			postfixExpr = append(postfixExpr, string(str))
 		}
 	}
+	for st.Length() > 0 {
+		s := st.Pop()
+		postfixExpr = append(postfixExpr, s.Value)
+	}
 	return postfixExpr
 }
 
@@ -108,16 +112,10 @@ func CalculateExpression(expression string) (string, error) {
 			postfixExpr = append(postfixExpr, string(str))
 		}
 	}
-
-	fmt.Println(postfixExpr)
-	for {
-		if st.Length() == 0 {
-			break
-		}
+	for st.Length() > 0 {
 		s := st.Pop()
 		postfixExpr = append(postfixExpr, s.Value)
 	}
-	// fmt.Println(postfixExpr)
 
 	st = stack.NewStack()
 	for _, el := range postfixExpr {
