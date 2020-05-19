@@ -58,7 +58,7 @@ func GetPostfixExpr(infixExpr string) string {
 			st.Push(stack.NewStackElement(string(str)))
 			break
 		default:
-			if string(str) == " " {
+			if string(str) == "" {
 				continue
 			}
 			postfixExpr = append(postfixExpr, string(str))
