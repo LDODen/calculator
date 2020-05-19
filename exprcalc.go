@@ -58,6 +58,9 @@ func GetPostfixExpr(infixExpr string) string {
 			st.Push(stack.NewStackElement(string(str)))
 			break
 		default:
+			if string(str) == " " {
+				continue
+			}
 			postfixExpr = append(postfixExpr, string(str))
 		}
 	}
@@ -68,13 +71,13 @@ func GetPostfixExpr(infixExpr string) string {
 	return strings.Join(postfixExpr, " ")
 }
 
-//CalculateExpression calculates given expression, returns solution or error
-func CalculateExpression(expression string) (string, error) {
+// SolvePostfix solves postfix expression
+func SolvePostfix(postfix string) string {
 
-	postfixExpr := strings.Split(GetPostfixExpr(expression), " ")
-
+	expr := strings.Split(postfix, " ")
 	st := stack.NewStack()
-	for _, el := range postfixExpr {
+
+	for _, el := range expr {
 		if el == "+" || el == "-" || el == "*" || el == "/" {
 			el1, _ := strconv.ParseFloat(st.Pop().Value, 64)
 			el2, _ := strconv.ParseFloat(st.Pop().Value, 64)
@@ -94,5 +97,11 @@ func CalculateExpression(expression string) (string, error) {
 			st.Push(stack.NewStackElement(el))
 		}
 	}
-	return st.Pop().Value, nil
+	return st.Pop().Value
+}
+
+//CalculateExpression calculates given expression, returns solution or error
+func CalculateExpression(expression string) (string, error) {
+	postfixExpr := GetPostfixExpr(expression)
+	return SolvePostfix(postfixExpr), nil
 }
