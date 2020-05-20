@@ -10,8 +10,11 @@ import (
 )
 
 // GetPostfixExpr returns expr in postfix form
-func GetPostfixExpr(infixExpr string) string {
+func GetPostfixExpr(infixExpr string) (string, error) {
 
+	if strings.Count(infixExpr, "(") != strings.Count(infixExpr, ")") {
+		return "", errors.New("ExpressionError: Brackets must be paired")
+	}
 	infixExpr = strings.Replace(infixExpr, " ", "", -1)
 	infixExpr = strings.Replace(infixExpr, "+", ",+,", -1)
 	infixExpr = strings.Replace(infixExpr, "-", ",-,", -1)
@@ -69,7 +72,7 @@ func GetPostfixExpr(infixExpr string) string {
 		s := st.Pop()
 		postfixExpr = append(postfixExpr, s.Value)
 	}
-	return strings.Join(postfixExpr, " ")
+	return strings.Join(postfixExpr, " "), nil
 }
 
 // SolvePostfix solves postfix expression
@@ -106,6 +109,9 @@ func SolvePostfix(postfix string) (string, error) {
 
 //CalculateExpression calculates given expression, returns solution or error
 func CalculateExpression(expression string) (string, error) {
-	postfixExpr := GetPostfixExpr(expression)
+	postfixExpr, err := GetPostfixExpr(expression)
+	if err != nil {
+		return "", err
+	}
 	return SolvePostfix(postfixExpr)
 }
