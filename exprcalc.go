@@ -46,7 +46,7 @@ func GetPostfixExpr(infixExpr string) string {
 				if st.Length() == 0 || st.Head.Value == "(" {
 					break
 				}
-				if string(str) == "/" && st.Head.Value == "*" {
+				if string(str) == "/" && (st.Head.Value == "*" || st.Head.Value == "+" || st.Head.Value == "-") {
 					break
 				}
 				if string(str) == "*" && (st.Head.Value == "+" || st.Head.Value == "-") {
