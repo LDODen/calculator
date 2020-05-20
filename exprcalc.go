@@ -1,6 +1,7 @@
 package exprcalc
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -72,7 +73,7 @@ func GetPostfixExpr(infixExpr string) string {
 }
 
 // SolvePostfix solves postfix expression
-func SolvePostfix(postfix string) string {
+func SolvePostfix(postfix string) (string, error) {
 
 	expr := strings.Split(postfix, " ")
 	st := stack.NewStack()
@@ -90,6 +91,9 @@ func SolvePostfix(postfix string) string {
 			case "*":
 				result = el1 * el2
 			case "/":
+				if el1 == 0 {
+					return "", errors.New("error occured due to division by zero")
+				}
 				result = el2 / el1
 			}
 			st.Push(stack.NewStackElement(fmt.Sprintf("%f", result)))
@@ -97,11 +101,11 @@ func SolvePostfix(postfix string) string {
 			st.Push(stack.NewStackElement(el))
 		}
 	}
-	return st.Pop().Value
+	return st.Pop().Value, nil
 }
 
 //CalculateExpression calculates given expression, returns solution or error
 func CalculateExpression(expression string) (string, error) {
 	postfixExpr := GetPostfixExpr(expression)
-	return SolvePostfix(postfixExpr), nil
+	return SolvePostfix(postfixExpr)
 }
