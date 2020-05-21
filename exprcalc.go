@@ -12,9 +12,25 @@ import (
 // GetPostfixExpr returns expr in postfix form
 func GetPostfixExpr(infixExpr string) (string, error) {
 
-	if strings.Count(infixExpr, "(") != strings.Count(infixExpr, ")") {
+	st := stack.NewStack()
+	for _, c := range infixExpr {
+		cc := string(c)
+		if cc == "(" {
+			st.Push(stack.NewStackElement(cc))
+		}
+		if cc == ")" {
+			if st.Length() > 0 {
+				_ = st.Pop()
+			} else {
+				return "", errors.New("ExpressionError: Brackets must be paired")
+			}
+		}
+	}
+
+	if st.Length() > 0 {
 		return "", errors.New("ExpressionError: Brackets must be paired")
 	}
+
 	infixExpr = strings.Replace(infixExpr, " ", "", -1)
 	infixExpr = strings.Replace(infixExpr, "+", ",+,", -1)
 	infixExpr = strings.Replace(infixExpr, "-", ",-,", -1)
@@ -25,7 +41,7 @@ func GetPostfixExpr(infixExpr string) (string, error) {
 
 	tempInfix := strings.Split(infixExpr, ",")
 
-	st := stack.NewStack()
+	st = stack.NewStack()
 	postfixExpr := []string{}
 	for _, str := range tempInfix {
 		switch string(str) {
@@ -95,7 +111,7 @@ func SolvePostfix(postfix string) (string, error) {
 				result = el1 * el2
 			case "/":
 				if el1 == 0 {
-					return "", errors.New("error occured due to division by zero")
+					return "", errors.New("TypeError: Division by zero.")
 				}
 				result = el2 / el1
 			}
